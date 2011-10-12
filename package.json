@@ -1,0 +1,9 @@
+{ "name": "grabs"
+, "version": "0.0.1"
+, "private": true
+, "dependencies":
+  { "formidable": ">= 1.0.0"
+  , "express": "2.4.7"
+  , "jade": ">= 0.16.2"
+  }
+}

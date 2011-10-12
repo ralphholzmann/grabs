@@ -20,7 +20,7 @@ app.configure(function() {
 // Handle incoming image posts
 app.post("/", function( req, res, next ) {
 
-    var name  = (i++).toString( 36 ),
+    var name  = "r" + (i++).toString( 36 ),
         form = new formidable.IncomingForm();
 
         form.parse( req, function(err, fields, files) {
