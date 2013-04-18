@@ -1,9 +1,11 @@
-{ "name": "grabs"
-, "version": "0.0.1"
-, "private": true
-, "dependencies":
-  { "formidable": ">= 1.0.0"
-  , "express": "2.4.7"
-  , "jade": ">= 0.16.2"
+{
+  "name": "grabs",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "formidable": ">= 1.0.0",
+    "express": "2.4.7",
+    "jade": ">= 0.16.2",
+    "npid": "~0.3.1"
   }
 }

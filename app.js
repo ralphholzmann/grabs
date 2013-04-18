@@ -5,7 +5,8 @@ var express     = require( "express" ),
     join        = require('path').join,
     imageDir   = join( __dirname, "public"),
     moment      = require("moment"),
-    app         = express.createServer();
+    app         = express.createServer(),
+    npid        = require("npid");
 
 // Configure application
 app.configure(function() {
@@ -68,7 +69,12 @@ app.get("/:id.png", function( req, res ) {
     }
   })
 });
-/**/
+
+try {
+  npid.create("/var/run/grabs.pid", true);
+} catch (e) {
+  console.error e
+}
 
 module.exports = app;
 
