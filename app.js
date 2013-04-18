@@ -73,7 +73,7 @@ app.get("/:id.png", function( req, res ) {
 try {
   npid.create("/var/run/grabs.pid", true);
 } catch (e) {
-  console.error e
+  console.error(e);
 }
 
 module.exports = app;
