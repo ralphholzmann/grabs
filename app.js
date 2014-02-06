@@ -16,6 +16,7 @@ app.configure(function() {
     app.set('view engine', 'jade');
     app.use(express.favicon());
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+    app.use(express.static(join(__dirname, "public")));
 });
 
 // Handle incoming image posts
@@ -23,7 +24,7 @@ app.post("/", function( req, res, next ) {
   new formidable.IncomingForm().parse( req, function( err, fields, files ) {
 
     (function write() {
-      var name = Math.random().toString(36).slice(2) + ".png",
+      var name = Math.random().toString(36).slice(2, 10) + ".png",
           imagePath = join( imageDir, name );
 
       fs.exists( imagePath, function( exists ) {
@@ -32,7 +33,7 @@ app.post("/", function( req, res, next ) {
         } else {
           fs.rename( files.imagedata.path, imagePath );
           res.writeHead( 200, {'content-type': 'text/plain'} );
-          res.end("http://grabs.ralphholzmann.com/" + name );
+          res.end("http://i.ralph.io/" + name );
         }
       });
     })();
@@ -56,13 +57,22 @@ app.get("/:id.png", function( req, res ) {
     if (exists) {
       if (req.headers["user-agent"] && req.headers["user-agent"].toLowerCase().indexOf("twitterbot") > -1) {
         fs.stat(imgPath, function(err, stats) {
-          res.render("image", {
+          res.render(join(__dirname, "views", "image.jade"), {
             id: req.params.id,
             time: moment(stats.ctime).format("LLL")
           });
         });
       } else {
-        fs.createReadStream(imgPath).pipe(res);
+        fs.stat(imgPath, function (err, stats) {
+          res.setHeader("Content-Type", "image/png");
+          res.writeHead(200, {
+            "Content-Type": "image/png",
+            "Cache-Control": "max-age=31556926",
+            "Expires": new Date(Date.now() + 345600000).toUTCString(),
+            "Content-Length": stats.size
+          });
+          fs.createReadStream(imgPath).pipe(res);
+        });
       }
     } else {
       res.send(404);
