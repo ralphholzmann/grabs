@@ -5,7 +5,7 @@ var moment      = require("moment");
 var serveStatic = require('serve-static');
 var multiparty  = require("multiparty");
 var morgan      = require("morgan");
-var config      = require("config");
+var config      = require("./config");
 
 var imageDir    = join( __dirname, "public");
 var app         = module.exports = express();
