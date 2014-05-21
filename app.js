@@ -29,6 +29,7 @@ function createRandomWriteStream (callback) {
   });
 }
 
+// Handle incoming post requests
 app.post("/", function (req, res, next) {
   var form = new multiparty.Form();
 
@@ -48,30 +49,31 @@ app.post("/", function (req, res, next) {
   form.parse(req);
 });
 
+// Handler to check if request is from Twitter
 app.get("/:id.png", function (req, res, next) {
-  var imgPath = join(imageDir, req.params.id + ".png");
+  var ua = req.headers["user-agent"] || "";
+  var isTwitterBot = ua.toLowerCase().indexOf("twitterbot") > -1 && !req.query.s;
 
-  fs.exists(imgPath, function(exists) {
-    var ua = req.headers["user-agent"] || "";
-    var isTwitterBot = ua.toLowerCase().indexOf("twitterbot") > -1 && !req.query.s;
+  if (isTwitterBot) {
+    var imgPath = join(imageDir, req.params.id + ".png");
 
-    if (exists && isTwitterBot) {
-      fs.stat(imgPath, function(err, stats) {
-        res.render(join(__dirname, "views", "image.jade"), {
-          id: req.params.id,
-          time: moment(stats.ctime).format("LLL")
-        });
+    fs.stat(imgPath, function(err, stats) {
+      res.render(join(__dirname, "views", "image.jade"), {
+        id: req.params.id,
+        time: moment(stats.ctime).format("LLL")
       });
-    } else {
-      next();
-    }
-  });
+    });
+  } else {
+    next();
+  }
 });
 
+// Static server
 app.use(serveStatic(imageDir, {
   maxAge: ONE_YEAR_MILLISECONDS
 }));
 
+// Start it up
 if (!module.parent) {
   app.listen(app.get("port"), function () {
     console.info("Grabs server listening on port", app.get("port"));
