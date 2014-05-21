@@ -2,11 +2,11 @@ doctype html
 html
   head
     meta(name='twitter:card', content='photo')
-    meta(name='twitter:site', content='@rlph')
-    meta(name='twitter:creator', content='@rlph')
+    meta(name='twitter:site', content='@#{username}')
+    meta(name='twitter:creator', content='@#{username}')
     meta(name='twitter:title', content='Screen Grab ' + time)
-    meta(name='twitter:image:src', content='http://i.ralph.io/#{id}.png?s=1')
-    meta(name='twitter:domain', content='i.ralph.io')
+    meta(name='twitter:image:src', content='http://#{domain}/#{id}.png?s=1')
+    meta(name='twitter:domain', content='#{domain}')
     title Screen Grab #{time}
   body
     img(src="/#{id}.png?s=1")

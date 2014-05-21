@@ -5,6 +5,7 @@ var moment      = require("moment");
 var serveStatic = require('serve-static');
 var multiparty  = require("multiparty");
 var morgan      = require("morgan");
+var config      = require("config");
 
 var imageDir    = join( __dirname, "public");
 var app         = module.exports = express();
@@ -39,7 +40,7 @@ app.post("/", function (req, res, next) {
     createRandomWriteStream(function (writeStream) {
       part.pipe(writeStream).on("close", function () {
         res.writeHead(OK, {'content-type': 'text/plain'});
-        res.end("http://i.ralph.io/" + writeStream.path.split("/").pop());
+        res.end("http://" + config.domain + "/" + writeStream.path.split("/").pop());
       });
     });
   });
@@ -60,7 +61,9 @@ app.get("/:id.png", function (req, res, next) {
     fs.stat(imgPath, function(err, stats) {
       res.render(join(__dirname, "views", "image.jade"), {
         id: req.params.id,
-        time: moment(stats.ctime).format("LLL")
+        time: moment(stats.ctime).format("LLL"),
+        domain: config.domain,
+        username: config.twitter_username
       });
     });
   } else {
