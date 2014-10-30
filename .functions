@@ -1,0 +1,6 @@
+# Throw this in your bashrc/zshrc config.
+# Thanks @rixth!
+function grab() {
+  app_path=/Applications/Gyazo.app
+  /usr/bin/ruby $app_path/Contents/Resources/script $app_path $1
+}

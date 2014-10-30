@@ -1,6 +1,7 @@
 var express     = require("express");
 var fs          = require("fs");
-var join        = require('path').join;
+var path        = require("path");
+var join        = path.join;
 var moment      = require("moment");
 var serveStatic = require('serve-static');
 var multiparty  = require("multiparty");
@@ -17,13 +18,13 @@ app.set("port", process.env.PORT || 8080);
 app.set('view engine', 'jade');
 app.use(morgan());
 
-function createRandomWriteStream (callback) {
-  var name = Math.random().toString(36).slice(2, 10) + ".png"; // \o/
+function createRandomWriteStream (ext, callback) {
+  var name = Math.random().toString(36).slice(2, 10) + ext; // \o/
   var imagePath = join(imageDir, name);
 
   fs.exists(imagePath, function (exists) {
     if (exists) {
-      createRandomWriteStream(callback);
+      createRandomWriteStream(ext, callback);
     } else {
       callback(fs.createWriteStream(imagePath));
     }
@@ -35,9 +36,10 @@ app.post("/", function (req, res, next) {
   var form = new multiparty.Form();
 
   form.on('part', function (part) {
-    if (part.name !== 'imagedata') return part.resume();
+    if (part.name !== 'filedata') return part.resume();
 
-    createRandomWriteStream(function (writeStream) {
+    var ext = path.extname(part.filename);
+    createRandomWriteStream(ext, function (writeStream) {
       part.pipe(writeStream).on("close", function () {
         res.writeHead(OK, {'content-type': 'text/plain'});
         res.end("http://" + config.domain + "/" + writeStream.path.split("/").pop());
