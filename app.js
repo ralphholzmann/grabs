@@ -9,6 +9,7 @@ var morgan      = require("morgan");
 var config      = require("./config");
 
 var imageDir    = join( __dirname, "public");
+var staticDir   = join( __dirname, "static");
 var app         = module.exports = express();
 
 var ONE_YEAR_MILLISECONDS = 3.154e10;
@@ -50,6 +51,31 @@ app.post("/", function (req, res, next) {
   form.on('error', next);
 
   form.parse(req);
+});
+
+// Static server
+app.use(serveStatic(staticDir, {
+  maxAge: ONE_YEAR_MILLISECONDS
+}));
+
+// Handle asciicinema files
+app.get("/:id.rec.json", function (req, res, next) {
+  var jsonPath = join(imageDir, req.params.id + ".rec.json");
+
+  if (!req.query.s) {
+    fs.stat(jsonPath, function(err, stats) {
+      if (err) {
+        return res.send('');
+      }
+
+      res.render(join(__dirname, "views", "asciicinema.jade"), {
+        id: req.params.id,
+        time: moment(stats.ctime).format("LLL"),
+      });
+    });
+  } else {
+    next();
+  }
 });
 
 // Handler to check if request is from Twitter
