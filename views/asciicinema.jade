@@ -1,0 +1,10 @@
+doctype html
+html
+  head
+    title Ascii Cinema #{time}
+    link(rel='stylesheet', type='text/css', href='/asciinema-player.css')
+    script(src='/asciinema-player.js')
+  body
+    div#player-container
+    script.
+      asciinema.player.js.CreatePlayer('player-container', '/#{id}.rec.json?s=1');
