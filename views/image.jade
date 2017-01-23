@@ -7,6 +7,10 @@ html
     meta(name='twitter:title', content='Screen Grab ' + time)
     meta(name='twitter:image:src', content='http://#{domain}/#{id}.png?s=1')
     meta(name='twitter:domain', content='#{domain}')
+    meta(property='og:image', content='http://#{domain}/#{id}.png?s=1')
+    meta(property='og:type', content='image')
+    meta(property='og:url', content='http://#{domain}/#{id}.png')
+    meta(property='og:title', content='Screen Grab ' + time)
     title Screen Grab #{time}
   body
     img(src="/#{id}.png?s=1")
