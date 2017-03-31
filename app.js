@@ -7,7 +7,7 @@ var serveStatic = require('serve-static');
 var multiparty  = require("multiparty");
 var morgan      = require("morgan");
 var config      = require("./config");
-var le          = require('greenlock-express');
+var lex         = require('greenlock-express');
 
 var imageDir    = join( __dirname, "public");
 var staticDir   = join( __dirname, "static");
@@ -107,31 +107,11 @@ app.use(serveStatic(imageDir, {
 
 // Start it up
 if (!module.parent) {
-  le.create({
-    server: 'staging',
-
-    challenges: {
-      'http-01': require('le-challenge-fs').create({
-        webrootPath: '/tmp/acme-challenges'
-      })
-    },
-    store: require('le-store-certbot').create({
-      webrootPath: '/tmp/acme-challenges'
-    }),
-
-    approveDomains: function approveDomains(opts, certs, cb) {
-      // The domains being approved for the first time are listed in opts.domains
-      // Certs being renewed are listed in certs.altnames
-      if (certs) {
-        opts.domains = certs.altnames;
-      } else {
-        opts.email = config.email;
-        opts.agreeTos = true;
-      }
-
-      cb(null, { options: opts, certs: certs });
-    },
+  lex.create({
+    server: 'production',
+    email: config.email,
+    agreeTos: true,
+    approveDomains: [ config.domain ],
     app: app
-  }).listen(8080, 9080);
-
+  }).listen(8080, 9080)
 }
