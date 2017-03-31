@@ -7,6 +7,7 @@ var serveStatic = require('serve-static');
 var multiparty  = require("multiparty");
 var morgan      = require("morgan");
 var config      = require("./config");
+var le          = require('greenlock-express');
 
 var imageDir    = join( __dirname, "public");
 var staticDir   = join( __dirname, "static");
@@ -17,7 +18,7 @@ var OK                    = 200;
 
 app.set("port", process.env.PORT || 8080);
 app.set('view engine', 'jade');
-app.use(morgan());
+app.use(morgan('tiny'));
 
 function createRandomWriteStream (ext, callback) {
   var name = Math.random().toString(36).slice(2, 10) + ext; // \o/
@@ -106,7 +107,31 @@ app.use(serveStatic(imageDir, {
 
 // Start it up
 if (!module.parent) {
-  app.listen(app.get("port"), function () {
-    console.info("Grabs server listening on port", app.get("port"));
-  });
+  le.create({
+    server: 'staging',
+
+    challenges: {
+      'http-01': require('le-challenge-fs').create({
+        webrootPath: '/tmp/acme-challenges'
+      })
+    },
+    store: require('le-store-certbot').create({
+      webrootPath: '/tmp/acme-challenges'
+    }),
+
+    approveDomains: function approveDomains(opts, certs, cb) {
+      // The domains being approved for the first time are listed in opts.domains
+      // Certs being renewed are listed in certs.altnames
+      if (certs) {
+        opts.domains = certs.altnames;
+      } else {
+        opts.email = config.email;
+        opts.agreeTos = true;
+      }
+
+      cb(null, { options: opts, certs: certs });
+    },
+    app: app
+  }).listen(8080, 9080);
+
 }

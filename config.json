@@ -1,4 +1,7 @@
 {
   "domain": "i.ralph.io",
-  "twitter_username": "rlph"
+  "twitter_username": "rlph",
+  "email": "ralph@holzmann.io",
+  "httpPort": 8080,
+  "httpsPort": 9080
 }
